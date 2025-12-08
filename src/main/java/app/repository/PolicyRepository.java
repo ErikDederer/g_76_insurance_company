@@ -22,7 +22,7 @@ public class PolicyRepository {
         return database.get(id);
     }
 
-    public List<Policy> findAll(Long id) {
+    public List<Policy> findAll() {
         return new ArrayList<>(database.values());
     }
 
