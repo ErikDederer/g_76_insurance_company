@@ -15,7 +15,6 @@ public class Customer {
 
     public Customer(String name) {
         this.name = name;
-        this.rating = 0.0;                  // по умолчанию 0.0
     }
 
 
@@ -31,9 +30,8 @@ public class Customer {
         return active;
     }
 
-    public double getRating() {
-        return rating;
-    }
+
+
 
     public List<Policy> getPolicies() {
         return policies;

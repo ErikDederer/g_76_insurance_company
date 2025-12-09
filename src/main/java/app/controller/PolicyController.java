@@ -2,6 +2,7 @@ package app.controller;
 
 import app.domain.Policy;
 import app.domain.PolicyType;
+import app.exceptions.PolicyTypeNotFoundException;
 import app.service.PolicyService;
 
 import java.util.List;
@@ -11,12 +12,19 @@ public class PolicyController {
     private final PolicyService service = PolicyService.getInstance();
 
     public Policy save(String number, String type, String coverageAmount) {
-        double numericCoverageAmount = Double.parseDouble(coverageAmount);
-        PolicyType policyType = PolicyType.valueOf(type.toUpperCase());
-        Policy policy = new Policy(number, policyType, numericCoverageAmount);
+        double numericCoverage = Double.parseDouble(coverageAmount);
+
+        PolicyType policyType;
+        try {
+            policyType = PolicyType.valueOf(type.toUpperCase());
+        } catch (IllegalArgumentException e) {
+
+            throw new PolicyTypeNotFoundException(type);
+        }
+
+        Policy policy = new Policy(number, policyType, numericCoverage);
         return service.save(policy);
     }
-
     public List<Policy> getAllActivePolicies() {
         return service.getAllActivePolicies();
     }
