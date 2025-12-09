@@ -3,6 +3,7 @@ package app.domain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Customer {
 
@@ -80,14 +81,20 @@ public class Customer {
         StringBuilder builder = new StringBuilder(info);
         builder.append("Policies:");
 
+
         if (policies.isEmpty()) {
             builder.append(" (no policies)");
         } else {
-            policies.forEach(p -> builder
-                    .append(" ")
-                    .append(p.getNumber()));
+            String policyList = policies.stream()
+                    .map(Policy::getNumber)
+                    .collect(Collectors.joining(", "));
+
+            builder.append(" ").append(policyList);
         }
 
         return builder.toString();
+
+
+
     }
 }
