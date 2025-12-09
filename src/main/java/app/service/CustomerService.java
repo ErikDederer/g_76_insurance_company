@@ -2,10 +2,12 @@ package app.service;
 
 import app.domain.Customer;
 import app.domain.Policy;
+import app.exceptions.CustomerUpdateException;
 import app.exceptions.PolicyNotFoundException;
 import app.repository.CustomerRepository;
 import app.exceptions.CustomerNotFoundException;
 import app.exceptions.CustomerSaveException;
+
 
 import java.util.List;
 
@@ -56,6 +58,15 @@ public class CustomerService {
         repository.update(id, newName);
     }
 
+    public void updateRating(Long id, double newRating) {
+        if (newRating < 0.0) {
+            throw new CustomerUpdateException("Рейтинг клиента не может быть отрицательным");
+        }
+        Customer customer = getActiveCustomerById(id);
+        customer.setRating(newRating);
+    }
+
+
     //Удалить клиента из базы данных по его идентификатору.
 
     public void deleteById(Long id) {
@@ -93,7 +104,7 @@ public class CustomerService {
                 .sum();
     }
 
-    public double getCustomerAverageCoverage (Long customerId){
+    public double getCustomerAverageCoverage(Long customerId) {
         Customer customer = getActiveCustomerById(customerId);
         return customer.getPolicies().stream()
                 .filter(Policy::isActive)
@@ -102,27 +113,25 @@ public class CustomerService {
                 .orElse(0.0);
     }
 
-    public void addPolicyToCustomer(Long customerId, Long policyId){
+    public void addPolicyToCustomer(Long customerId, Long policyId) {
         Customer customer = getActiveCustomerById(customerId);
         Policy policy = policyService.getActivePolicyById(policyId);
-        if (policy == null || !policy.isActive()){
+        if (policy == null || !policy.isActive()) {
             throw new PolicyNotFoundException(policyId);
         }
         customer.getPolicies().add(policy);
     }
 
-    public void removePolicyFromCustomerId (Long customerId, Long policyId){
+    public void removePolicyFromCustomerById(Long customerId, Long policyId) {
         Customer customer = getActiveCustomerById(customerId);
         customer.getPolicies().removeIf(p -> p.getId() != null && p.getId().equals(policyId));
 
     }
 
-    public void clearCustomerPolicies(Long customerId){
+    public void clearCustomerPolicies(Long customerId) {
         Customer customer = getActiveCustomerById(customerId);
         customer.getPolicies().clear();
     }
-
-
 
 
 }

@@ -29,6 +29,9 @@ public class PolicyService {
         if (policy == null) {
             throw new PolicySaveException("Полис не может быть null");
         }
+        if (policy.getCoverageAmount() < 0) {
+            throw new PolicySaveException("Страховая сумма не может быть отрицательной");
+        }
         String number = policy.getNumber();
         if (number == null || number.trim().isEmpty()) {
             throw new PolicySaveException("Номер полиса не должен быть пустым");
@@ -70,10 +73,12 @@ public class PolicyService {
     }
 
     public void deleteByNumber(String number) {
-        getAllActivePolicies()
-                .stream()
-                .filter(p -> p.getNumber() != null && p.getNumber().equals(number))
-                .forEach(p -> p.setActive(false));
+        for (Policy policy : repository.findAll() ) {
+            if (policy.getNumber().equals(number)) {
+                policy.setActive(false);
+                break;
+            }
+        }
     }
 
     public void restoreById(Long id) {
