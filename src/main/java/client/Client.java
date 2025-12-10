@@ -1,8 +1,8 @@
 package client;
 
+import app.controller.ClaimController;
 import app.controller.CustomerController;
 import app.controller.PolicyController;
-
 
 
 import java.util.Scanner;
@@ -10,6 +10,7 @@ import java.util.Scanner;
 public class Client {
     private static PolicyController policyController;
     private static CustomerController customerController;
+    private static ClaimController claimController;
     private static Scanner scanner;
 
     public static void main(String[] args) {
@@ -18,6 +19,7 @@ public class Client {
             // Создаём объекты контроллеров для взаимодействия с приложением
             policyController = new PolicyController();
             customerController = new CustomerController();
+            claimController = new ClaimController();
             scanner = new Scanner(System.in);
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -28,6 +30,7 @@ public class Client {
             System.out.println("==== СТРАХОВОЙ СЕРВИС ====");
             System.out.println("1 - операции с полисами");
             System.out.println("2 - операции с клиентами");
+            System.out.println("3 - операции с заявками по страховому случаю");
             System.out.println("0 - выход");
             System.out.print("Ваш выбор: ");
 
@@ -40,11 +43,93 @@ public class Client {
                 case "2":
                     customerOperations();
                     break;
+                case "3":
+                    claimOperations();
+                    break;
                 case "0":
                     return;
                 default:
                     System.out.println("Некорректный ввод!");
                     break;
+            }
+        }
+    }
+
+    public static void claimOperations() {
+        while (true) {
+            try {
+                System.out.println();
+                System.out.println("=== ОПЕРАЦИИ С ЗАЯВКАМИ ===");
+                System.out.println("1 - создать заявку");
+                System.out.println("2 - показать все активные заявки");
+                System.out.println("3 - показать заявку по идентификатору");
+                System.out.println("4 - обновить покрытие заявки");
+                System.out.println("5 - обновить решение заявки");
+                System.out.println("6 - удалить заявку по идентификатору");
+                System.out.println("7 - восстановить заявку по идентификатору");
+                System.out.println("0 - выход в главное меню");
+                System.out.print("Ваш выбор: ");
+
+                String input = scanner.nextLine();
+                String id;
+                String type;
+                String customerId;
+                String coverage;
+                String decision;
+                switch (input) {
+                    case "1":
+                        System.out.println("Введите тип заявки (AUTO/HEALTH/PROPERTY):");
+                        type = scanner.nextLine();
+                        System.out.println("Введите идентификатор клиента:");
+                        customerId = scanner.nextLine();
+                        System.out.println("Введите сумму покрытия:");
+                        coverage = scanner.nextLine();
+                        System.out.println("Создана заявка: " +
+                                claimController.save(type, customerId, coverage));
+                        break;
+                    case "2":
+                        claimController.getAll().forEach(System.out::println);
+                        break;
+                    case "3":
+                        System.out.println("Введите идентификатор заявки:");
+                        id = scanner.nextLine();
+                        System.out.println(claimController.getById(id));
+                        break;
+                    case "4":
+                        System.out.println("Введите идентификатор заявки:");
+                        id = scanner.nextLine();
+                        System.out.println("Введите новую сумму покрытия:");
+                        coverage = scanner.nextLine();
+                        claimController.update(id, coverage);
+                        System.out.println("Сумма покрытия успешно обновлена.");
+                        break;
+                    case "5":
+                        System.out.println("Введите идентификатор заявки:");
+                        id = scanner.nextLine();
+                        System.out.println("Введите решение заявки (true/false):");
+                        decision = scanner.nextLine();
+                        claimController.updateDecision(id, decision);
+                        System.out.println("Решение заявки успешно обновлено.");
+                        break;
+                    case "6":
+                        System.out.println("Введите идентификатор заявки:");
+                        id = scanner.nextLine();
+                        claimController.deleteById(id);
+                        System.out.println("Заявка успешно удалена.");
+                    case "7":
+                        System.out.println("Введите идентификатор заявки:");
+                        id = scanner.nextLine();
+                        claimController.restoreById(id);
+                        System.out.println("Заявка успешно восстановлена.");
+                        break;
+                    case "0":
+                        return;
+                    default:
+                        System.out.println("Некорректный ввод! Попробуйте еще раз.");
+                        break;
+                }
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
             }
         }
     }
